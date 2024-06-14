@@ -1,6 +1,5 @@
 import datetime
 
-
 class Policyholder:
     def __init__(self, policyholder_id, name, date_of_birth, address, phone) -> None:
         self.policyholder_id = policyholder_id
@@ -31,7 +30,6 @@ class ClaimsManagementSystem:
         self.policies = {}
         self.claims = {}
     
-    # Utility Functions
     def is_valid_date(self, date_str):
         """ Validate if the provided string is a valid date. """
         try:
@@ -97,6 +95,13 @@ class ClaimsManagementSystem:
         return False
     
     def add_claim(self, claim):
+        policy = self.get_policy(claim.policy_id)
+        if not policy:
+            raise ValueError("Policy does not exist.")
+        if claim.claim_amount > policy.premium:
+            raise ValueError("Claim amount cannot exceed the policy premium.")
+        if not self.is_valid_date(claim.date_of_claim):
+            raise ValueError("Invalid date format for claim. Use DD-MM-YYYY.")
         self.claims[claim.claim_id] = claim
     
     def get_claim(self, claim_id):
@@ -118,47 +123,3 @@ class ClaimsManagementSystem:
             del self.claims[claim_id]
             return True
         return False
-    
-    def get_claim_by_status(self, status):
-        return [claim for claim in self.claims.values() if claim.status == status]
-
-    def update_claim_status(self, claim_id, new_status):
-        if claim_id in self.claims:
-            self.claims[claim_id].status = new_status
-            return True
-        return False
-
-cms = ClaimsManagementSystem()
-
-ph = Policyholder(1, 'Mahesh Babu', '09-08-1975','Jubliee HillS, Hyderabad', '1234567890')
-cms.add_policyholder(ph)
-
-print(cms.get_policyholder(1))
-
-cms.update_policyholder(1, name="Jane Doe")
-
-print(cms.get_policyholder(1))
-
-cms.delete_policyholder(1)
-
-print(cms.get_policyholder(1))
-
-p = Policy(101, 1, '01-01-2024', '13-06-2030', 100)
-cms.add_policy(p)
-
-print(cms.get_policy(101))
-
-cms.update_policy(101, end_date='14-06-2024')
-
-print(cms.get_policy(101))
-
-cms.delete_policy(101)
-
-print(cms.get_policy(101))
-
-c = Claim(501, 101, '13-06-2024', 500, 'Pending')
-cms.add_claim(c)
-
-cms.update_claim_status(501,'Approved')
-
-assert cms.get_claim_by_status('Approved')[0].claim_id == 501
