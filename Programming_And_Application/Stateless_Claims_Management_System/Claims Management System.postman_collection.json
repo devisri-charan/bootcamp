@@ -1,0 +1,467 @@
+{
+	"info": {
+		"_postman_id": "6b4a4067-b07f-4fc0-8432-b488fa9f7d63",
+		"name": "Claims Management System",
+		"description": "This collection contains all the necessary API endpoints for managing policyholders, policies, and claims within a Claims Management System. Each endpoint supports various operations including creation, retrieval, updating, and deletion of records. This API is designed to facilitate the administration of insurance claims and related data, making it easier for users to handle insurance-related transactions.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23058307"
+	},
+	"item": [
+		{
+			"name": "Add Policyholder",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"policyholder_id\": \"1\",\r\n    \"name\": \"Mahesh Babu\",\r\n    \"date_of_birth\": \"09-08-1975\",\r\n    \"address\": \"Jubliee HillS, Hyderabad\",\r\n    \"phone\": \"1234567890\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/policyholders",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"policyholders"
+					]
+				},
+				"description": "Adds a new policyholder to the system. Requires a JSON payload containing the policyholder's details such as ID, name, date of birth, address, and phone number. Returns a success message upon successful addition."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Policyholder",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<canvas id=\"myChart\" height=\"75\"></canvas>\r",
+							"\r",
+							"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js\"></script> \r",
+							"\r",
+							"<script>\r",
+							"    var ctx = document.getElementById(\"myChart\");\r",
+							"\r",
+							"    var myChart = new Chart(ctx, {\r",
+							"        type: \"bar\",\r",
+							"        data: {\r",
+							"            labels: [\"Name\", \"Date of Birth\", \"Address\", \"Phone\", \"Policyholder ID\"],\r",
+							"            datasets: [{\r",
+							"                data: [{{response.name}}, {{response.date_of_birth}}, {{response.address}}, {{response.phone}}, {{response.policyholder_id}}],\r",
+							"                \r",
+							"                // Change these colours to customize the chart\r",
+							"                backgroundColor: [\"#003f5c\", \"#58508d\", \"#bc5090\", \"#ff6361\", \"#ffa600\"],\r",
+							"            }]\r",
+							"        },\r",
+							"        options: {\r",
+							"            legend: { display: false },\r",
+							"            title: {\r",
+							"                display: true,\r",
+							"                text: 'Policyholder Information'\r",
+							"            },\r",
+							"            scales: {\r",
+							"                xAxes: [{\r",
+							"                    display: true,\r",
+							"                    scaleLabel: {\r",
+							"                        display: true,\r",
+							"                        labelString: 'Categories'\r",
+							"                    }\r",
+							"                }],\r",
+							"                yAxes: [{\r",
+							"                    display: true,\r",
+							"                    scaleLabel: {\r",
+							"                        display: true,\r",
+							"                        labelString: 'Data'\r",
+							"                    }\r",
+							"                }]\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"    });\r",
+							"\r",
+							"    // Access the data passed to pm.visualizer.set() from the JavaScript\r",
+							"    // code of the Visualizer template\r",
+							"    pm.getData(function (err, value) {\r",
+							"        myChart.update();\r",
+							"    });\r",
+							"\r",
+							"</script>`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    var res = pm.response.json();\r",
+							"    \r",
+							"    var visualizerData = {\r",
+							"        \r",
+							"        // Extracting and formatting data for visualization\r",
+							"        name: JSON.stringify(res.name),\r",
+							"        date_of_birth: JSON.stringify(res.date_of_birth),\r",
+							"        address: JSON.stringify(res.address),\r",
+							"        phone: JSON.stringify(res.phone),\r",
+							"        policyholder_id: JSON.stringify(res.policyholder_id)\r",
+							"    };\r",
+							"\r",
+							"    return {response: visualizerData};\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/policyholders?policyholder_id=1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"policyholders"
+					],
+					"query": [
+						{
+							"key": "policyholder_id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "Retrieves details of a specific policyholder by their ID. The policyholder ID must be provided as a query parameter. Returns the policyholder's details if found."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Policyholder",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"phone\" : \"8125561115\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/policyholders/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"policyholders",
+						"1"
+					]
+				},
+				"description": "Updates information for an existing policyholder identified by their policyholder ID. Accepts partial or full JSON data for fields like name, date of birth, address, and phone."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Policyholder",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/policyholders/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"policyholders",
+						"1"
+					]
+				},
+				"description": "Deletes a policyholder from the system using their ID. Returns a confirmation message if the deletion is successful."
+			},
+			"response": []
+		},
+		{
+			"name": "Add Policy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"policy_id\": \"101\",\r\n    \"policyholder_id\" : \"1\",\r\n    \"start_date\": \"01-01-2024\",\r\n    \"end_date\": \"13-06-2030\",\r\n    \"premium\": \"100\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/policies",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"policies"
+					]
+				},
+				"description": "Adds a new policy to the system. Requires a JSON payload with details such as policy ID, policyholder ID, start date, end date, and premium. Validates the existence of the policyholder and date formats before addition."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Policy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/policies?policy_id=101",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"policies"
+					],
+					"query": [
+						{
+							"key": "policy_id",
+							"value": "101"
+						}
+					]
+				},
+				"description": "Retrieves a specific policy by its ID. The policy ID must be provided as a query parameter. Returns the policy details if found."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Policy",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"start_date\": \"01-01-2025\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/policies/101",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"policies",
+						"101"
+					]
+				},
+				"description": "Updates details of an existing policy. Supports modification of start date, end date, and premium amount through JSON payload."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Policy",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/policies/101",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"policies",
+						"101"
+					]
+				},
+				"description": "Removes a policy from the system using its ID. Provides a success message upon successful deletion."
+			},
+			"response": []
+		},
+		{
+			"name": "Add Claim",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"claim_id\" : \"501\",\r\n    \"policy_id\" : \"101\",\r\n    \"date_of_claim\" : \"13-06-2031\",\r\n    \"claim_amount\" : \"100\",\r\n    \"status\" : \"Pending\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/claims",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"claims"
+					]
+				},
+				"description": "Registers a new claim associated with a specific policy. Requires JSON payload including claim ID, policy ID, date of the claim, claim amount, and status. Validates policy existence and claim amount constraints."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Claim",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/claims?claim_id=501",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"claims"
+					],
+					"query": [
+						{
+							"key": "claim_id",
+							"value": "501"
+						}
+					]
+				},
+				"description": "Fetches details of a specific claim by its ID. The claim ID should be provided as a query parameter. Returns the claim's details if available."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Claim",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"claim_amount\" : \"20\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/claims/501",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"claims",
+						"501"
+					]
+				},
+				"description": "Updates an existing claim's details such as date of claim, amount, or status. Accepts JSON payload with updated information."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Claim",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/claims/501",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"claims",
+						"501"
+					]
+				},
+				"description": "Deletes a claim from the system using its ID. Confirms the deletion with a success message."
+			},
+			"response": []
+		}
+	]
+}
