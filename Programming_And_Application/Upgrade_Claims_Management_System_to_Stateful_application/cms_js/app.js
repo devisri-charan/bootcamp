@@ -1,4 +1,5 @@
 const express = require('express')
+const { body, validationResult } = require('express-validator');
 const bodyParser = require('body-parser')
 const mongoose = require("mongoose")
 const cors = require("cors")
@@ -6,9 +7,9 @@ const dotenv = require("dotenv")
 
 dotenv.config();
 mongoose
-.connect(process.env.MONGODB_URL)
-.then(() => console.log("Connected to MongoDB"))
-.catch((err) => console.log('Could not connect to MongoDB', err))
+    .connect(process.env.MONGODB_URL)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch((err) => console.log('Could not connect to MongoDB', err))
 
 const app = express()
 app.use(bodyParser.json());
@@ -21,16 +22,23 @@ const Policyholder = require("./models/Policyholder");
 const Policy = require("./models/Policy");
 const Claim = require("./models/Claim");
 
-function isValidDate(dateStr) {
-    return !isNaN(new Date(dateStr).getTime());
-}
-
 app.get('/', (req, res) => {
-    res.send('Welcome to Insurance API');
+    res.send('Welcome to Claims Management System API');
 })
 
 // Create a new policyholder
-app.post('/policyholders', async (req, res) => {
+app.post('/policyholders', [
+    body('policyholder_id').notEmpty().withMessage('Policyholder ID is required'),
+    body('name').notEmpty().withMessage('Name is required'),
+    body('date_of_birth').isDate().withMessage('Date of Birth must be a valid date'),
+    body('address').notEmpty().withMessage('Address is required'),
+    body('phone').notEmpty().withMessage('Phone number is required')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         const policyholder = new Policyholder(req.body);
         await policyholder.save();
@@ -54,7 +62,7 @@ app.get('/policyholders/:policyholder_id', async (req, res) => {
 // Update a policyholder
 app.put('/policyholders/:policyholder_id', async (req, res) => {
     try {
-        const policyholder = await Policyholder.findOneAndUpdate({ policyholder_id: req.params.policyholder_id }, req.body, { new: true });
+        const policyholder = await Policyholder.findOneAndUpdate({ policyholder_id: req.params.policyholder_id }, req.body, { new: true, runValidators: true });
         if (!policyholder) return res.status(404).send('Policyholder not found');
         res.send(policyholder);
     } catch (error) {
@@ -74,7 +82,18 @@ app.delete('/policyholders/:policyholder_id', async (req, res) => {
 });
 
 // Create a new policy
-app.post('/policies', async (req, res) => {
+app.post('/policies', [
+    body('policy_id').notEmpty().withMessage('Policy ID is required'),
+    body('policyholder_id').notEmpty().withMessage('Policyholder ID is required'),
+    body('start_date').isDate().withMessage('Start Date must be a valid date'),
+    body('end_date').isDate().withMessage('End Date must be a valid date'),
+    body('premium').isNumeric().withMessage('Premium must be a number')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         const policy = new Policy(req.body);
         await policy.save();
@@ -98,7 +117,7 @@ app.get('/policies/:policy_id', async (req, res) => {
 // Update a policy
 app.put('/policies/:policy_id', async (req, res) => {
     try {
-        const policy = await Policy.findOneAndUpdate({ policy_id: req.params.policy_id }, req.body, { new: true });
+        const policy = await Policy.findOneAndUpdate({ policy_id: req.params.policy_id }, req.body, { new: true, runValidators: true });
         if (!policy) return res.status(404).send('Policy not found');
         res.send(policy);
     } catch (error) {
@@ -118,7 +137,18 @@ app.delete('/policies/:policy_id', async (req, res) => {
 });
 
 // Create a new claim
-app.post('/claims', async (req, res) => {
+app.post('/claims', [
+    body('claim_id').notEmpty().withMessage('Claim ID is required'),
+    body('policy_id').notEmpty().withMessage('Policy ID is required'),
+    body('date_of_claim').isDate().withMessage('Date of Claim must be a valid date'),
+    body('claim_amount').isNumeric().withMessage('Claim Amount must be a number'),
+    body('status').notEmpty().withMessage('Status is required')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         const claim = new Claim(req.body);
         await claim.save();
@@ -142,7 +172,7 @@ app.get('/claims/:claim_id', async (req, res) => {
 // Update a claim
 app.put('/claims/:claim_id', async (req, res) => {
     try {
-        const claim = await Claim.findOneAndUpdate({ claim_id: req.params.claim_id }, req.body, { new: true });
+        const claim = await Claim.findOneAndUpdate({ claim_id: req.params.claim_id }, req.body, { new: true, runValidators: true });
         if (!claim) return res.status(404).send('Claim not found');
         res.send(claim);
     } catch (error) {
