@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const mongoose = require("mongoose")
 const cors = require("cors")
 const dotenv = require("dotenv")
+const apiKeyMiddleware = require('./middleware/apiKeyMiddleware')
 
 dotenv.config();
 mongoose
@@ -17,14 +18,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 const Policyholder = require("./models/Policyholder");
 const Policy = require("./models/Policy");
 const Claim = require("./models/Claim");
 
+
 app.get('/', (req, res) => {
     res.send('Welcome to Claims Management System API');
 })
+
+app.use(apiKeyMiddleware)
 
 // Create a new policyholder
 app.post('/policyholders', [

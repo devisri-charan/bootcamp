@@ -12,12 +12,7 @@ const policySchema = new Schema({
       }
     }
   },
-  start_date: { type: Date, required: true, validate:{
-    validator: function(value){
-      return this.end_date > value;
-    },
-    message: 'Start date cannot be after end date'
-  }},
+  start_date: { type: Date, required: true},
   end_date: { type: Date, required: true, validate: {
     validator: function(value){
       return this.start_date < value;
