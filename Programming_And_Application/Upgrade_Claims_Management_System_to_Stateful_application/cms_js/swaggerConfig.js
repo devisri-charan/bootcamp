@@ -10,19 +10,19 @@ const swaggerDefinition = {
         description: 'This collection contains all the necessary API endpoints for managing policyholders, policies, and claims within a Claims Management System. Each endpoint supports various operations including creation, retrieval, updating, and deletion of records. This API is designed to facilitate the administration of insurance claims and related data, making it easier for users to handle insurance-related transactions.',
     },
     components: {
-        securitySchemes: {
-            ApiKeyAuth: {
-                type: 'apiKey',
-                in: 'header',
-                name: 'x-api-key',
-                description: 'API key for authorization',
-            },
-        },
+        // securitySchemes: {
+        //     ApiKeyAuth: {
+        //         type: 'apiKey',
+        //         in: 'header',
+        //         name: 'x-api-key',
+        //         description: 'API key for authorization',
+        //     },
+        // },
     },
     security: [
-        {
-            ApiKeyAuth: [],
-        },
+        // {
+        //     ApiKeyAuth: [],
+        // },
     ],
     servers: [
         {

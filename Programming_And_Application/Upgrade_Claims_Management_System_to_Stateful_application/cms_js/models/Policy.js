@@ -19,6 +19,7 @@ const policySchema = new Schema({
     },
     message: 'End date must be after start date'
   }},
+  payments: [{ date: Date, amount: Number }],
   premium: { type: Number, required: true }
 });
 

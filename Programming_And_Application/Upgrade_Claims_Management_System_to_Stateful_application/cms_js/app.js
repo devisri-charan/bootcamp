@@ -4,7 +4,9 @@ const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const apiKeyMiddleware = require('./middleware/apiKeyMiddleware');
+const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const setupSwagger = require('./swaggerConfig');
 
 dotenv.config();
@@ -29,8 +31,60 @@ app.get('/', (req, res) => {
     res.send('Welcome to Claims Management System API');
 });
 
-// Apply the API key middleware to all routes
-app.use(apiKeyMiddleware);
+app.post('/register', [
+    body('name').notEmpty().withMessage('Name is required'),
+    body('date_of_birth').isDate().withMessage('Date of Birth must be a valid date'),
+    body('address').notEmpty().withMessage('Address is required'),
+    body('phone').notEmpty().withMessage('Phone number is required'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { name, date_of_birth, address, phone, role, password } = req.body;
+
+        const existingUser = await Policyholder.findOne({ phone });
+        if (existingUser) return res.status(400).send('Policyholder already exists.');
+
+        const policyholder_id = uuidv4();  
+        const hashedPassword = await bcrypt.hash(password, 16);
+        const policyholder = new Policyholder({
+            policyholder_id,
+            name,
+            date_of_birth,
+            address,
+            phone,
+            role,
+            password: hashedPassword
+        });
+
+        await policyholder.save();
+
+        const token = jwt.sign({ policyholder_id: policyholder.policyholder_id }, process.env.JWT_SECRET);
+        res.status(201).send({ token });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+})
+
+app.post('/login', async (req, res) => {
+    const { phone, password } = req.body;
+    try {
+        const policyholder = await Policyholder.findOne({ phone });
+        if (!policyholder) return res.status(400).send('Invalid Phone Number or password.');
+
+        const validPassword = await bcrypt.compare(password, policyholder.password);
+        if (!validPassword) return res.status(400).send('Invalid Phone Number or password.');
+
+        const token = jwt.sign({ policyholder_id: policyholder.policyholder_id }, process.env.JWT_SECRET);
+        res.status(200).send({ token });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+})
 
 /**
  * @swagger

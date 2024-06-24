@@ -31,7 +31,8 @@ const claimSchema = new Schema({
             message: 'Claim amount must not exceed policy premium'
         }
     },
-    status: { type: String, required: true }
+    status: { type: String, required: true },
+    reason_of_claim: { type: String, required: true}
 });
 
 module.exports = mongoose.model("Claim", claimSchema);
