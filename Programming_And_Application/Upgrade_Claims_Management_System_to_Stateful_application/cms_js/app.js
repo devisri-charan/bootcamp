@@ -44,7 +44,7 @@ app.post('/register', [
     }
 
     try {
-        const { name, date_of_birth, address, phone, role, password } = req.body;
+        const { name, date_of_birth, address, phone, password } = req.body;
 
         const existingUser = await Policyholder.findOne({ phone });
         if (existingUser) return res.status(400).send('Policyholder already exists.');
@@ -57,14 +57,13 @@ app.post('/register', [
             date_of_birth,
             address,
             phone,
-            role,
             password: hashedPassword
         });
 
         await policyholder.save();
 
         const token = jwt.sign({ policyholder_id: policyholder.policyholder_id }, process.env.JWT_SECRET);
-        res.status(201).send({ token });
+        res.status(201).send({ token, policyholder_id: policyholder.policyholder_id });
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -80,7 +79,7 @@ app.post('/login', async (req, res) => {
         if (!validPassword) return res.status(400).send('Invalid Phone Number or password.');
 
         const token = jwt.sign({ policyholder_id: policyholder.policyholder_id }, process.env.JWT_SECRET);
-        res.status(200).send({ token });
+        res.status(200).send({ token , policyholder_id: policyholder.policyholder_id});
     } catch (error) {
         res.status(400).send(error.message);
     }

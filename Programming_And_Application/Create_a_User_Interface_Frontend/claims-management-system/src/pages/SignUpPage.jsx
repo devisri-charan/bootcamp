@@ -1,27 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { home } from '../assets';
 import { IoIosArrowBack } from "react-icons/io";
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../redux/userSlice';
 
 const SignUpPage = () => {
   const [name, setName] = useState('');
-  const [dob, setDob] = useState('');
+  const [date_of_birth, setdateOfBirth] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [retypePassword, setRetypePassword] = useState('');
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { userInfo, loading, error } = useSelector((state) => state.user);
+
   const handleSignUp = (e) => {
     e.preventDefault();
-    // Handle the signup logic here
-    console.log('Name:', name);
-    console.log('Date of Birth:', dob);
-    console.log('Address:', address);
-    console.log('Phone:', phone);
-    console.log('Password:', password);
-    console.log('Retype Password:', retypePassword);
+    if (password !== retypePassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    dispatch(registerUser({ name, date_of_birth, address, phone, password }));
   };
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate(`/user/${userInfo.policyholder_id}`);
+    }
+  }, [userInfo, navigate])
 
   return (
     <div className='flex items-center justify-center min-h-screen bg-pearl'>
@@ -33,7 +42,6 @@ const SignUpPage = () => {
           </div>
           <form onSubmit={handleSignUp}>
             <div className='mb-4'>
-              {/* <label htmlFor='name' className='block text-shadow font-medium mb-2'>Name</label> */}
               <input
                 type='text'
                 id='name'
@@ -44,20 +52,18 @@ const SignUpPage = () => {
               />
             </div>
             <div className='mb-4'>
-              {/* <label htmlFor='dob' className='block text-shadow font-medium mb-2'>Date of Birth</label> */}
               <input
                 type='text'
-                id='dob'
-                value={dob}
+                id='date_of_birth'
+                value={date_of_birth}
                 placeholder='Date of Birth'
                 onFocus={(e) => (e.target.type = "date")}
                 onBlur={(e) => (e.target.type = "text")}
-                onChange={(e) => setDob(e.target.value)}
+                onChange={(e) => setdateOfBirth(e.target.value)}
                 className='w-full px-3 py-2 border border-shadow rounded-xl focus:outline-none focus:ring-2 focus:ring-citrus'
               />
             </div>
             <div className='mb-4'>
-              {/* <label htmlFor='address' className='block text-shadow font-medium mb-2'>Address</label> */}
               <input
                 type='text'
                 id='address'
@@ -68,7 +74,6 @@ const SignUpPage = () => {
               />
             </div>
             <div className='mb-4'>
-              {/* <label htmlFor='phone' className='block text-shadow font-medium mb-2'>Phone Number</label> */}
               <input
                 type='tel'
                 id='phone'
@@ -79,7 +84,6 @@ const SignUpPage = () => {
               />
             </div>
             <div className='mb-4'>
-              {/* <label htmlFor='password' className='block text-shadow font-medium mb-2'>Password</label> */}
               <input
                 type='password'
                 id='password'
@@ -90,12 +94,11 @@ const SignUpPage = () => {
               />
             </div>
             <div className='mb-4'>
-              {/* <label htmlFor='retypePassword' className='block text-shadow font-medium mb-2'>Retype Password</label> */}
               <input
                 type='password'
                 id='retypePassword'
                 value={retypePassword}
-                placeholder='Comfirm Your Password'
+                placeholder='Confirm Your Password'
                 onChange={(e) => setRetypePassword(e.target.value)}
                 className='w-full px-3 py-2 border border-shadow rounded-xl focus:outline-none focus:ring-2 focus:ring-citrus'
               />
@@ -104,8 +107,9 @@ const SignUpPage = () => {
               type='submit'
               className='w-full bg-citrus text-frost font-bold py-2 px-4 mb-4 rounded-xl hover:bg-midnight transition duration-200'
             >
-              Sign Up
+              {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
+            {error && <p className='text-red-500'>{error.message}</p>}
           </form>
           <div>
             <p>Already have an account ? <Link to='/login' className='text-citrus'>Login</Link></p>
