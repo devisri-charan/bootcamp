@@ -19,7 +19,7 @@ const LogInPage = () => {
 
   useEffect(()=>{
     if (userInfo){
-      navigate(`/user/${userInfo.policyholder_id}`);
+      navigate(`/user/${userInfo.policyholder_id}`,{ state: { name: userInfo.name } });
     }
   }, [userInfo, navigate])
 

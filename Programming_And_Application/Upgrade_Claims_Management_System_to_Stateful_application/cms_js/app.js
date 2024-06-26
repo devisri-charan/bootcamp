@@ -63,7 +63,7 @@ app.post('/register', [
         await policyholder.save();
 
         const token = jwt.sign({ policyholder_id: policyholder.policyholder_id }, process.env.JWT_SECRET);
-        res.status(201).send({ token, policyholder_id: policyholder.policyholder_id });
+        res.status(201).send({ token, policyholder_id: policyholder.policyholder_id, name: policyholder.name});
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -79,7 +79,7 @@ app.post('/login', async (req, res) => {
         if (!validPassword) return res.status(400).send('Invalid Phone Number or password.');
 
         const token = jwt.sign({ policyholder_id: policyholder.policyholder_id }, process.env.JWT_SECRET);
-        res.status(200).send({ token , policyholder_id: policyholder.policyholder_id});
+        res.status(200).send({ token , policyholder_id: policyholder.policyholder_id, name: policyholder.name});
     } catch (error) {
         res.status(400).send(error.message);
     }
