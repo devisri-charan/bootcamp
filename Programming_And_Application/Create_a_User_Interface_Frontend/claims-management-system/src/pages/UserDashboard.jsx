@@ -10,11 +10,11 @@ import UserHomePage from './UserHomePage';
 
 const UserDashboard = () => {
   const location = useLocation();
-  const { name } = location.state || {name: "User"}; // Default to 'User' if no username is passed
+  const { name } = location.state || {name: "User"};
   return (
     <div>
       <UserNavbar />
-      <main className="p-4">
+      <main className="p-4 bg-pearl">
         <Routes>
           <Route path='' element={<UserHomePage name={name}/>}/>
           <Route path="policies" element={<PoliciesPage />} />

@@ -1,40 +1,41 @@
 import React from 'react';
-import { car, home, family } from '../assets';
 
-const Policies = () => {
+const Policies = ({ policies }) => {
     return (
-        <section className="policies pb-16 px-8">
+        <section className="bg-pearl pb-16 px-8">
             <h2 className="text-3xl font-bold text-center mb-8">Our Insurance Policies</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="bg-frost p-6 rounded-2xl shadow-md">
-                    <img src={family} alt='Life Insurance' className='w-33vw mb-4 rounded-2xl h-[250px]' />
-                    <h3 className="text-2xl font-bold mb-4 text-citrus">Life Insurance</h3>
-                    <p className="text-textSecondary text-lg mb-4">Comprehensive coverage for life's uncertainties.</p>
-                    <p className="text-textSecondary">Protect your loved ones with our comprehensive life insurance policies, offering peace of mind and financial security.</p>
-                    <button className="mt-4 bg-citrus text-frost py-2 px-4 rounded-xl hover:bg-midnight transition duration-200">
-                        Buy Policy
-                    </button>
-                </div>
-                <div className="bg-frost p-6 rounded-2xl shadow-md">
-                    <img src={car} alt='Auto Insurance' className='w-33vw mb-4 rounded-2xl h-[250px]' />
-                    <h3 className="text-2xl font-bold mb-4 text-citrus">Auto Insurance</h3>
-                    <p className="text-textSecondary text-lg mb-4">Protect your vehicle with our insurance plans.</p>
-                    <p className="text-textSecondary">Stay protected on the road with our auto insurance policies, offering coverage for accidents, theft, and more.</p>
-                    <button className="mt-4 bg-citrus text-frost py-2 px-4 rounded-xl hover:bg-midnight transition duration-200">
-                        Buy Policy
-                    </button>
-                </div>
-                <div className="bg-frost p-6 rounded-2xl shadow-md">
-                    <img src={home} alt='Home Insurance' className='w-33vw mb-4 rounded-2xl h-[250px]' />
-                    <h3 className="text-2xl font-bold mb-4 text-citrus">Home Insurance</h3>
-                    <p className="text-textSecondary text-lg mb-4">Protect your vehicle with our insurance plans.</p>
-                    <p className="text-textSecondary">Ensure your home is protected from unexpected events with our comprehensive home insurance policies.</p>
-                    <button className="mt-4 bg-citrus text-frost py-2 px-4 rounded-xl hover:bg-midnight transition duration-200">
-                        Buy Policy
-                    </button>
-                </div>
+                {policies.map((policy, index) => (
+                    <div key={index} className="bg-frost p-6 rounded-2xl shadow-md flex flex-col justify-between h-full">
+                        <div>
+                            <img src={policy.img} alt={policy.title} className='w-full mb-4 rounded-2xl h-[250px] object-cover' />
+                            <h1 className="text-2xl font-bold mb-2 text-citrus">{policy.title}</h1>
+                            <h2 className="text-lg mb-2">{policy.subtitle}</h2>
+                            <p className="mb-4">{policy.description}</p>
+                            <p><span className="font-bold">Tenure:</span> {policy.tenure}</p>
+                            <p><span className="font-bold">Coverage:</span> {policy.coverage}</p>
+                            <p><span className="font-bold">Premium:</span> {policy.premium}</p>
+                            <div className="mt-4">
+                                <h3 className="font-bold mb-2">Benefits:</h3>
+                                <ul className="list-disc list-inside text-textSecondary">
+                                    {policy.benefits.map((benefit, idx) => (
+                                        <li key={idx}>{benefit}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="mt-4">
+                                <h3 className="font-bold mb-2">Terms & Conditions:</h3>
+                                <p className="text-textSecondary">{policy.termsAndConditions}</p>
+                            </div>
+                        </div>
+                        {/* <button className="mt-4 bg-citrus text-frost py-2 px-4 rounded-xl hover:bg-midnight transition duration-200 self-start">
+                            Buy Policy
+                        </button> */}
+                    </div>
+                ))}
             </div>
-        </section>)
+        </section>
+    )
 }
 
-export default Policies
+export default Policies;
