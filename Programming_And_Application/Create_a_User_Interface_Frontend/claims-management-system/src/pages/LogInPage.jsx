@@ -10,16 +10,20 @@ const LogInPage = () => {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const {userInfo, loading,error} = useSelector((state)=>state.user);
+  const { userInfo, loading, error } = useSelector((state) => state.user);
 
   const handleLogin = (e) => {
     e.preventDefault();
     dispatch(loginUser({ phone, password }));
   };
 
-  useEffect(()=>{
-    if (userInfo){
-      navigate(`/user/${userInfo.policyholder_id}`,{ state: { name: userInfo.name } });
+  useEffect(() => {
+    if (userInfo) {
+      if (userInfo.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate(`/user/${userInfo.policyholder_id}`, { state: { name: userInfo.name } });
+      }
     }
   }, [userInfo, navigate])
 

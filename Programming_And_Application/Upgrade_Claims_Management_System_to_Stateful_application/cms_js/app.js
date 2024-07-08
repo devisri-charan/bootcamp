@@ -8,6 +8,8 @@ const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const setupSwagger = require('./swaggerConfig');
+const authMiddleware = ('./middleware/authMiddleware');
+const adminMiddleware = ('./middleware/authMiddleware');
 
 dotenv.config();
 mongoose
@@ -24,6 +26,12 @@ app.use(express.urlencoded({ extended: true }));
 const Policyholder = require("./models/Policyholder");
 const Policy = require("./models/Policy");
 const Claim = require("./models/Claim");
+
+const {
+    generateUniquePolicyholderID,
+    generateUniquePolicyID,
+    generateUniqueClaimID
+} = require('./idGenerator');
 
 setupSwagger(app);
 
@@ -49,7 +57,7 @@ app.post('/register', [
         const existingUser = await Policyholder.findOne({ phone });
         if (existingUser) return res.status(400).send('Policyholder already exists.');
 
-        const policyholder_id = uuidv4();  
+        const policyholder_id = await generateUniquePolicyholderID();
         const hashedPassword = await bcrypt.hash(password, 16);
         const policyholder = new Policyholder({
             policyholder_id,
@@ -63,7 +71,7 @@ app.post('/register', [
         await policyholder.save();
 
         const token = jwt.sign({ policyholder_id: policyholder.policyholder_id }, process.env.JWT_SECRET);
-        res.status(201).send({ token, policyholder_id: policyholder.policyholder_id, name: policyholder.name});
+        res.status(201).send({ token, policyholder_id: policyholder.policyholder_id, name: policyholder.name, role: policyholder.role});
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -79,7 +87,7 @@ app.post('/login', async (req, res) => {
         if (!validPassword) return res.status(400).send('Invalid Phone Number or password.');
 
         const token = jwt.sign({ policyholder_id: policyholder.policyholder_id }, process.env.JWT_SECRET);
-        res.status(200).send({ token , policyholder_id: policyholder.policyholder_id, name: policyholder.name});
+        res.status(200).send({ token, policyholder_id: policyholder.policyholder_id, name: policyholder.name, role: policyholder.role});
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -273,6 +281,37 @@ app.delete('/policyholders/:policyholder_id', async (req, res) => {
     }
 });
 
+// New route to fetch all policies of a policyholder
+app.get('/policyholders/:policyholder_id/policies', async (req, res) => {
+    try {
+        const policies = await Policy.find({ policyholder_id: req.params.policyholder_id });
+        if (!policies || policies.length === 0) return res.status(404).send('No policies found for this policyholder');
+        res.send(policies);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+// New route to fetch all claims of a policyholder
+app.get('/policyholders/:policyholder_id/claims', async (req, res) => {
+    try {
+        const claims = await Claim.find({ policyholder_id: req.params.policyholder_id });
+        if (!claims || claims.length === 0) return res.status(404).send('No policies found for this policyholder');
+        res.send(claims);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
+// New route to fetch all the details of customer policyholders
+app.get('/policyholders', async (req, res) => {
+    try {
+        const policyholders = await Policyholder.find({ role: "customer" });
+        res.send(policyholders);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
 /**
  * @swagger
  * components:
@@ -334,11 +373,10 @@ app.delete('/policyholders/:policyholder_id', async (req, res) => {
  *         description: Bad request
  */
 app.post('/policies', [
-    body('policy_id').notEmpty().withMessage('Policy ID is required'),
-    body('policyholder_id').notEmpty().withMessage('Policyholder ID is required'),
+    body('policy_type').notEmpty().withMessage('Policy Type is required'),
     body('start_date').isDate().withMessage('Start Date must be a valid date'),
     body('end_date').isDate().withMessage('End Date must be a valid date'),
-    body('premium').isNumeric().withMessage('Premium must be a number')
+    body('premium').isNumeric().withMessage('Premium must be a number'),
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -346,7 +384,27 @@ app.post('/policies', [
     }
 
     try {
-        const policy = new Policy(req.body);
+        const policy_id = await generateUniquePolicyID();
+        const { policyholder_id, policy_type, start_date, end_date, coverage, premium} = req.body;
+
+        const payment = {
+            payment_id: uuidv4(),
+            date: new Date(),
+            amount: premium
+        }
+
+        const policyData = {
+            policy_id,
+            policyholder_id,
+            policy_type,
+            start_date,
+            end_date,
+            coverage,
+            premium,
+            payments: [payment]
+        };
+
+        const policy = new Policy(policyData);
         await policy.save();
         res.status(201).send(policy);
     } catch (error) {
@@ -462,6 +520,29 @@ app.delete('/policies/:policy_id', async (req, res) => {
     }
 });
 
+// New Route: Pay Premium
+app.post('/policies/:policy_id/pay', [
+    body('amount').isNumeric().withMessage('Amount must be a number')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { amount } = req.body;
+        const policy = await Policy.findOne({ policy_id: req.params.policy_id });
+        if (!policy) return res.status(404).send('Policy not found');
+
+        const payment_id = uuidv4();
+        policy.payments.push({ payment_id, amount });
+        await policy.save();
+        res.status(201).send(policy);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
 /**
  * @swagger
  * components:
@@ -522,11 +603,9 @@ app.delete('/policies/:policy_id', async (req, res) => {
  *         description: Bad request
  */
 app.post('/claims', [
-    body('claim_id').notEmpty().withMessage('Claim ID is required'),
-    body('policy_id').notEmpty().withMessage('Policy ID is required'),
     body('date_of_claim').isDate().withMessage('Date of Claim must be a valid date'),
     body('claim_amount').isNumeric().withMessage('Claim Amount must be a number'),
-    body('status').notEmpty().withMessage('Status is required')
+    body('reason_of_claim').notEmpty().withMessage('Reason of Claim is required')
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -534,7 +613,17 @@ app.post('/claims', [
     }
 
     try {
-        const claim = new Claim(req.body);
+        const claim_id = await generateUniqueClaimID();
+        const {policy_id, policyholder_id, date_of_claim, claim_amount, reason_of_claim} = req.body;
+        const claimData = {
+            claim_id,
+            policy_id,
+            policyholder_id,
+            date_of_claim, 
+            claim_amount,
+            reason_of_claim
+        }
+        const claim = new Claim(claimData);
         await claim.save();
         res.status(201).send(claim);
     } catch (error) {
@@ -645,6 +734,60 @@ app.delete('/claims/:claim_id', async (req, res) => {
         const claim = await Claim.findOneAndDelete({ claim_id: req.params.claim_id });
         if (!claim) return res.status(404).send('Claim not found');
         res.send({ message: 'Claim deleted successfully' });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
+app.get('/claims', async (req, res) => {
+    try {
+        const pendingClaims = await Claim.find({ status: "Pending" });
+        res.send(pendingClaims);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
+app.put('/claims/:claim_id/approve', async (req, res) => {
+    try {
+        const claim = await Claim.findOne({ claim_id: req.params.claim_id });
+        if (!claim) return res.status(404).send('Claim not found');
+
+        if (claim.status === 'Approved') {
+            return res.status(400).send('Claim is already approved');
+        }
+
+        const policy = await Policy.findOne({ policy_id: claim.policy_id });
+        if (!policy) return res.status(404).send('Policy not found');
+
+        if (claim.claim_amount > policy.coverage) {
+            return res.status(400).send('Claim amount exceeds remaining coverage');
+        }
+
+        claim.status = 'Approved';
+        await claim.save();
+
+        await policy.save();
+
+        res.send(claim);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
+app.put('/claims/:claim_id/reject', async (req, res) => {
+    try {
+        const claim = await Claim.findOne({ claim_id: req.params.claim_id });
+        if (!claim) return res.status(404).send('Claim not found');
+
+        if (claim.status === 'Rejected') {
+            return res.status(400).send('Claim is already rejected');
+        }
+
+        claim.status = 'Rejected';
+        await claim.save();
+
+        res.send(claim);
     } catch (error) {
         res.status(400).send(error.message);
     }

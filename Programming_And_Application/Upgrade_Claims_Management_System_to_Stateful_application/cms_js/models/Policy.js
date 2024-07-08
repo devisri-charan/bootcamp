@@ -12,14 +12,15 @@ const policySchema = new Schema({
       }
     }
   },
-  start_date: { type: Date, required: true},
-  end_date: { type: Date, required: true, validate: {
-    validator: function(value){
-      return this.start_date < value;
-    },
-    message: 'End date must be after start date'
-  }},
-  payments: [{ date: Date, amount: Number }],
+  policy_type: { type: String, required: true },
+  start_date: { type: Date, required: true },
+  end_date: { type: Date, required: true },
+  coverage: { type: Number, required: true },
+  payments: [{
+    payment_id: { type: String, required: true, unique: true, default: () => new mongoose.Types.ObjectId().toString() },
+    date: { type: Date, default: Date.now },
+    amount: { type: Number, required: true },
+  }],
   premium: { type: Number, required: true }
 });
 
