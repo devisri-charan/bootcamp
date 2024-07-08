@@ -9,7 +9,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/policyholders/${userId}`);
+        const response = await fetch(`https://bootcamp-y8br.onrender.com/policyholders/${userId}`);
         const data = await response.json();
         if (data.date_of_birth) {
           data.date_of_birth = new Date(data.date_of_birth).toISOString().split('T')[0];

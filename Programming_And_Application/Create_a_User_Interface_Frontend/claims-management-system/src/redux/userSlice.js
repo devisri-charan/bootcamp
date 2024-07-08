@@ -3,7 +3,7 @@ import axios from 'axios'
 
 export const loginUser = createAsyncThunk('user/loginUser', async (userData, { rejectWithValue }) => {
     try {
-        const response = await axios.post('http://localhost:3000/login', userData);
+        const response = await axios.post('https://bootcamp-y8br.onrender.com/login', userData);
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response.data);
@@ -12,7 +12,7 @@ export const loginUser = createAsyncThunk('user/loginUser', async (userData, { r
 
 export const registerUser = createAsyncThunk('user/registerUser', async (userData, { rejectWithValue }) => {
     try {
-        const response = await axios.post('http://localhost:3000/register', userData);
+        const response = await axios.post('https://bootcamp-y8br.onrender.com/register', userData);
         console.log(userData)
         return response.data;
     } catch (error) {

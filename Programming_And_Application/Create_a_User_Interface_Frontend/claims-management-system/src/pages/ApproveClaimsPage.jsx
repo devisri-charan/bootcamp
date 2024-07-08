@@ -7,7 +7,7 @@ const ApproveClaimsPage = () => {
   useEffect(() => {
     // Fetch pending claims from API
     const fetchClaims = async () => {
-      const response = await fetch('http://localhost:3000/claims');
+      const response = await fetch('https://bootcamp-y8br.onrender.com/claims');
       const data = await response.json();
       setClaims(data);
     };
@@ -15,13 +15,13 @@ const ApproveClaimsPage = () => {
   }, []);
   const handleApprove = async (claimId) => {
     // Approve claim API call
-    await fetch(`http://localhost:3000/claims/${claimId}/approve`, { method: 'PUT' });
+    await fetch(`https://bootcamp-y8br.onrender.com/claims/${claimId}/approve`, { method: 'PUT' });
     setClaims(claims.filter(claim => claim.claim_id !== claimId));
   };
 
   const handleReject = async (claimId) => {
     // Reject claim API call
-    await fetch(`http://localhost:3000/claims/${claimId}/reject`, { method: 'PUT' });
+    await fetch(`https://bootcamp-y8br.onrender.com/claims/${claimId}/reject`, { method: 'PUT' });
     setClaims(claims.filter(claim => claim.claim_id !== claimId));
   };
 

@@ -9,7 +9,7 @@ const ClaimsPage = () => {
   useEffect(() => {
     const fetchClaims = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/policyholders/${userId}/claims`);
+        const response = await fetch(`https://bootcamp-y8br.onrender.com/policyholders/${userId}/claims`);
         const data = await response.json();
         const formattedData = data.map(claim => ({
           ...claim,

@@ -7,7 +7,7 @@ const ManagePolicyholdersPage = () => {
   useEffect(() => {
     // Fetch policyholders from API
     const fetchPolicyholders = async () => {
-      const response = await fetch('http://localhost:3000/policyholders');
+      const response = await fetch('https://bootcamp-y8br.onrender.com/policyholders');
       const data = await response.json();
       const formattedData = data.map(policyholder => ({
         ...policyholder,

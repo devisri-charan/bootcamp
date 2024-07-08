@@ -9,20 +9,24 @@ class Policyholder:
         self.phone = phone
 
 class Policy:
-    def __init__(self,policy_id, policyholder_id, start_date, end_date, premium) -> None:
+    def __init__(self,policy_id, policyholder_id, policy_type, start_date, end_date, premium, coverage, payments) -> None:
         self.policy_id = policy_id
         self.policyholder_id = policyholder_id
+        self.policy_type = policy_type
         self.start_date = start_date
         self.end_date = end_date
         self.premium = premium
+        self.coverage = coverage
+        self.payments = payments
     
 class Claim:
-    def __init__(self, claim_id, policy_id, date_of_claim, claim_amount, status) -> None:
+    def __init__(self, claim_id, policy_id, date_of_claim, claim_amount, status, reason_of_claim) -> None:
         self.claim_id = claim_id
         self.policy_id = policy_id
         self.date_of_claim = date_of_claim
         self.claim_amount = claim_amount
         self.status = status
+        self.reason_of_claim = reason_of_claim
 
 class ClaimsManagementSystem:
     def __init__(self):

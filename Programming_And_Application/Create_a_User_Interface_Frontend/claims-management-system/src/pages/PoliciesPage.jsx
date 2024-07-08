@@ -14,7 +14,7 @@ const PoliciesPage = () => {
   useEffect(() => {
     const fetchPolicies = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/policyholders/${userId}/policies`);
+        const response = await fetch(`https://bootcamp-y8br.onrender.com/policyholders/${userId}/policies`);
         const data = await response.json();
         const formattedData = data.map(policy => ({
           ...policy,
@@ -87,7 +87,7 @@ const PoliciesPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/policies', {
+      const response = await fetch('https://bootcamp-y8br.onrender.com/policies', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -123,7 +123,7 @@ const PoliciesPage = () => {
     console.log(claim);
 
     try {
-      const response = await fetch('http://localhost:3000/claims', {
+      const response = await fetch('https://bootcamp-y8br.onrender.com/claims', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
