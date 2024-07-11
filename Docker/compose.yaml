@@ -1,0 +1,41 @@
+services:
+  client:
+    build: ./client
+    container_name: clientapp
+    ports:
+      - 5173:5173
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    develop:
+      watch:
+        - path: ./client/package.json
+          action: rebuild
+        - path: ./client/package-lock.json
+          action: rebuild
+        - path: ./client
+          target: /app
+          action: sync
+  server:
+    build: ./server
+    container_name: serverapp
+    ports:
+      - 3000:3000
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - MONGODB_URL=mongodb+srv://charan522003:BdN6yRGAv1kQdz0h@cluster0.o4fmxl4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET=lumiqcorp
+    
+    develop:
+      watch:
+        - path: ./server/package.json
+          action: rebuild
+        - path: ./server/package-lock.json
+          action: rebuild
+        - path: ./server
+          target: /app
+          action: sync
