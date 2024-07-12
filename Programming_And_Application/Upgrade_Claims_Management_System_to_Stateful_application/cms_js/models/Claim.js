@@ -43,6 +43,6 @@ const claimSchema = new Schema({
     },
     status: { type: String, default: "Pending"},
     reason_of_claim: { type: String, required: true}
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Claim", claimSchema);

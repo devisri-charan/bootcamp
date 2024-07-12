@@ -22,6 +22,6 @@ const policySchema = new Schema({
     amount: { type: Number, required: true },
   }],
   premium: { type: Number, required: true }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Policy", policySchema);
