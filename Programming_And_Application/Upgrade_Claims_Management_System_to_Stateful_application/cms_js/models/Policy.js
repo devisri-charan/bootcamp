@@ -24,4 +24,14 @@ const policySchema = new Schema({
   premium: { type: Number, required: true }
 }, { timestamps: true });
 
+// Middleware to ensure proper UTF-8 encoding
+policySchema.pre('save', function(next) {
+  for (let key in this.toObject()) {
+      if (typeof this[key] === 'string') {
+          this[key] = Buffer.from(this[key], 'utf-8').toString('utf-8');
+      }
+  }
+  next();
+});
+
 module.exports = mongoose.model("Policy", policySchema);

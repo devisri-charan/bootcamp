@@ -11,4 +11,14 @@ const policyholderSchema = new Schema({
   role: { type: String, enum: ['customer', 'admin'], default: 'customer' }
 }, { timestamps: true });
 
+// Middleware to ensure proper UTF-8 encoding
+policyholderSchema.pre('save', function(next) {
+  for (let key in this.toObject()) {
+      if (typeof this[key] === 'string') {
+          this[key] = Buffer.from(this[key], 'utf-8').toString('utf-8');
+      }
+  }
+  next();
+});
+
 module.exports = mongoose.model("Policyholder", policyholderSchema);

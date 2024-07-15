@@ -1,0 +1,3 @@
+_id,policyholder_id,name,date_of_birth,address,phone,password,role,__v,updatedAt
+66852bedfb910ed7ce43a403,PH737940,Mahesh Babu,176774400000,"Jubilee Hills, Street 6, Hyderabad",1234567890,$2b$16$K1TE4iu/z/7mwKuXqElsO.zRMEGOI9/8bfQpKKnvLxHyginxdPq..,customer,0,1720766136148
+66852c1efb910ed7ce43a413,PH345033,Prabhas,478569600000,"Jubilee Hills, Hyderabad",7894561230,$2b$16$YTMsaChJ8thLupd.bztxze2kmCL6pCj.XoPQljb8PR9AHmjCB.qsq,customer,0,1720765613354

@@ -45,4 +45,14 @@ const claimSchema = new Schema({
     reason_of_claim: { type: String, required: true}
 }, { timestamps: true });
 
+// Middleware to ensure proper UTF-8 encoding
+claimSchema.pre('save', function(next) {
+    for (let key in this.toObject()) {
+        if (typeof this[key] === 'string') {
+            this[key] = Buffer.from(this[key], 'utf-8').toString('utf-8');
+        }
+    }
+    next();
+});
+
 module.exports = mongoose.model("Claim", claimSchema);
