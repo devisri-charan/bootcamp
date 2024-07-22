@@ -9,6 +9,7 @@ const ClaimApprovalList = ({ claims, onApprove, onReject }) => {
                     <div key={claim.claim_id} className="bg-frost p-6 rounded-2xl shadow-md flex flex-col justify-between h-full">
                         <h2 className='text-2xl font-bold mb-2 text-citrus'>{claim.claim_id}</h2>
                         <p className='text-lg mb-2'><strong>Policyholder ID:</strong> {claim.policyholder_id}</p>
+                        <p className='text-lg mb-2'><strong>Policy ID:</strong> {claim.policy_id}</p>
                         <p className='text-lg mb-2'><strong>Status: </strong>{claim.status}</p>
                         <p className='text-lg mb-2'><strong>Reason of Claim: </strong>{claim.reason_of_claim}</p>
                         <div className='mt-2'>
